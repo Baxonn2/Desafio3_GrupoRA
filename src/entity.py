@@ -25,7 +25,7 @@ class Entity:
         self._position = position
         self._target_position = position
         self._target_done = False
-        self._infected = infected
+        self.__infected = infected
 
     def step(self):
         """
@@ -46,7 +46,7 @@ class Entity:
         Esta funcion debe infectar a la entidad si está dentro del rango
         que puede infectar.
         """
-        if not self._infected:
+        if not self.__infected:
             return
 
         x1, y1 = self._position
@@ -61,7 +61,10 @@ class Entity:
         return self._position
 
     def set_infected(self, infected: bool):
-        self._infected = infected
+        self.__infected = infected
+
+    def is_infected(self):
+        return self.__infected
 
     def set_target_position(self, target_position: Tuple[float, float]):
         self._target_position = target_position
@@ -70,9 +73,9 @@ class Entity:
         return self._target_done
 
     def draw(self, surface: pygame.surface.Surface):
-        color = [200, 0, 0] if self._infected else (0, 200, 0)
+        color = [200, 0, 0] if self.__infected else (0, 200, 0)
         
-        if self._infected and random() < self.INFECT_PROB:
+        if self.__infected and random() < self.INFECT_PROB:
             pygame.draw.circle(surface, [150, 33, 33], self._position,
                                self.INFECT_RADIO)
 

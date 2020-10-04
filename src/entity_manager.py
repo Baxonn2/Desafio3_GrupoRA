@@ -6,6 +6,8 @@ import pygame
 class EntityManager:
 
     __entitys: List[Entity]
+    __infected_entitys: List[Entity]
+    __healthy_entitys: List[Entity]
 
     # Constantes
     WORLD_WIDTH = 600
@@ -13,6 +15,8 @@ class EntityManager:
 
     def __init__(self):
         self.__entitys = []
+        self.__infected_entitys = []
+        self.__healthy_entitys = []
 
     def add_entity(self, entity: Entity = None, infected: bool = False):
         """
@@ -33,6 +37,11 @@ class EntityManager:
         # Agregando entidad a la lista de entidades
         self.__entitys.append(entity)
 
+        if entity.is_infected():
+            self.__infected_entitys.append(entity)
+        else:
+            self.__healthy_entitys.append(entity)
+
     def draw_and_update(self, screen: pygame.surface.Surface):
         """
         Actualiza y dibuja las entidades en pantalla
@@ -47,7 +56,7 @@ class EntityManager:
             entity.draw(screen)
 
         # Dibujando linea limite del mundo
-        pygame.draw.rect(screen, (132, 132, 132), 
+        pygame.draw.rect(screen, (132, 132, 132),
                         (0, 0, self.WORLD_WIDTH, self.WORLD_HEIGHT), width=1)
 
     def update(self):
@@ -76,8 +85,16 @@ class EntityManager:
 
         # Infectando otras entidades
         #* OPTIMIZE: Colocar aquí el mágico quadtree
-        for other_entity in self.__entitys:
-            entity.infect(other_entity)
+        if entity.is_infected():
+            infected = []
+            for other_entity in self.__healthy_entitys:
+                entity.infect(other_entity)
+                if other_entity.is_infected():
+                    infected.append(other_entity)
+            for to_medicate in infected:
+                self.__healthy_entitys.remove(to_medicate)
+                self.__infected_entitys.append(to_medicate)
+
     
     
 
