@@ -19,7 +19,7 @@ class Entity:
 
     # Constante de la infeccion
     INFECT_PROB = 0.1
-    INFECT_RADIO = 6
+    INFECT_RADIO = 7
 
     def __init__(self, position: List[float, float], infected: bool = False):
         self._position = position
@@ -37,7 +37,7 @@ class Entity:
         self._position[0] += dx
         self._position[1] += dy
 
-        # Actualizando el target
+        # Actualizando el estado del target
         self._target_done = abs(dx) < self.TARGET_DONE_RANGE and \
             abs(dy) < self.TARGET_DONE_RANGE
 
@@ -72,8 +72,8 @@ class Entity:
     def draw(self, surface: pygame.surface.Surface):
         color = [200, 0, 0] if self._infected else (0, 200, 0)
         
-        if self._infected:
-            pygame.draw.circle(surface, [66, 33, 33], self._position,
+        if self._infected and random() < self.INFECT_PROB:
+            pygame.draw.circle(surface, [150, 33, 33], self._position,
                                self.INFECT_RADIO)
 
         pygame.draw.circle(surface, color, self._position, 2)

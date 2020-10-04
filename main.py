@@ -6,7 +6,7 @@ def main():
     # Agregando entidad infectada
     grapher.add_entity(infected=True)
 
-    for _ in range(100):
+    for _ in range(150):
         grapher.add_entity()
 
     grapher.run()

@@ -1,75 +1,70 @@
 import pygame
 from random import random
 from src.entity import Entity
+from src.entity_manager import EntityManager
 from typing import List
+
 
 class Grapher:
 
-    _entitys: List[Entity]
+    __done: bool
+    __screen: pygame.surface.Surface
 
-    _done: bool
-    _screen: pygame.surface.Surface
+    __entity_manager: EntityManager
 
     # Constantes
     SCREEN_WIDTH = 900
     SCREEN_HEIGHT = 600
 
-    WORLD_WIDTH = 600
-    WORLD_HEIGHT = 600
-
     def __init__(self):
-        # Creando lista de entidades
-        self._entitys = []
+        # Creando manager de entidades
+        self.__entity_manager = EntityManager()
 
         # Inicializando graficador
-        self._done = False
+        self.__done = False
         pygame.init()
 
-        # TODO: hacer una configuración global de esto si es necesario
-        self._screen = pygame.display.set_mode((self.SCREEN_WIDTH, 
+        # Configurando ventana
+        self.__screen = pygame.display.set_mode((self.SCREEN_WIDTH, 
                                                 self.SCREEN_HEIGHT))
         pygame.display.set_caption("Pandemic Simulator")
 
     def add_entity(self, entity: Entity = None, infected: bool = False):
-        if entity is None:
-            w, h = (self.WORLD_WIDTH, self.WORLD_HEIGHT)
-            position = [random()*w, random()*h]
-            entity = Entity(position, infected=infected)
+        """
+        Agrega una nueva entidad al manager de entidades
 
-        # Agregando entidad a la lista de entidades
-        self._entitys.append(entity)
+        Args:
+            entity (Entity, optional): Nueva entidad a agregar. Si no se define
+                                       esta entidad se creara una con parametros
+                                       aleatorios.
+            infected (bool, optional): Establece si la entidad esta o no
+                                       infectada. Por defecto es False.
+        """
+        self.__entity_manager.add_entity(entity, infected=infected)
 
     def run(self):
-        while not self._done:
+        """
+        Bucle del graficador. Es necesario correr esta funcion para que el
+        graficador funcione.
+        """
+        while not self.__done:
             # Actualizando eventos
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    self._done = True
+                    self.__done = True
                     break
             
             # Actualizando pantalla
             self._draw_and_update()
             
     def _draw_and_update(self):
-        self._screen.fill((33, 33, 33))
+        """
+        Dibuja y actualiza todo lo que está dentro de graficador
+        """
+        self.__screen.fill((33, 33, 33))
 
-        # Dibujando 
-        for entity in self._entitys:
-            entity.step()
+        # Dibujando y actualizando entidades
+        self.__entity_manager.draw_and_update(self.__screen)
 
-            if entity.is_target_done():
-                w, h = (self.WORLD_WIDTH, self.WORLD_HEIGHT)
-                position = [random()*w, random()*h]
-                entity.set_target_position(position)
-
-            #* OPTIMIZE: Colocar aquí el mágico quadtree
-            for other_entity in self._entitys:
-                entity.infect(other_entity)
-
-            entity.draw(self._screen)
-
-
-        # Dibujando linea limite del mundo
-        pygame.draw.rect(self._screen, (255, 255, 255), 
-                        (0, 0, self.WORLD_WIDTH, self.WORLD_HEIGHT), width=1)
+        
         pygame.display.update()
