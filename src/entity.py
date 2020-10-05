@@ -75,9 +75,13 @@ class Entity:
     def draw(self, surface: pygame.surface.Surface):
         color = [200, 0, 0] if self.__infected else (0, 200, 0)
         
+        casted_position = [self._position[0], self._position[1]]
+        casted_position[0] = int(casted_position[0])
+        casted_position[1] = int(casted_position[1])
+
         if self.__infected and random() < self.INFECT_PROB:
-            pygame.draw.circle(surface, [150, 33, 33], self._position,
+            pygame.draw.circle(surface, [150, 33, 33], casted_position,
                                self.INFECT_RADIO)
 
-        pygame.draw.circle(surface, color, self._position, 2)
+        pygame.draw.circle(surface, color, casted_position, 2)
         

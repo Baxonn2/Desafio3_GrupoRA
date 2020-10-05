@@ -56,8 +56,8 @@ class EntityManager:
             entity.draw(screen)
 
         # Dibujando linea limite del mundo
-        pygame.draw.rect(screen, (132, 132, 132),
-                        (0, 0, self.WORLD_WIDTH, self.WORLD_HEIGHT), width=1)
+        #pygame.draw.rect(screen, (132, 132, 132),
+        #                (0, 0, self.WORLD_WIDTH, self.WORLD_HEIGHT), width=1)
 
     def update(self):
         """

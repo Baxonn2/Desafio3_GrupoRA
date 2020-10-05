@@ -13,7 +13,7 @@ class Grapher:
     __entity_manager: EntityManager
 
     # Constantes
-    SCREEN_WIDTH = 900
+    SCREEN_WIDTH = 600
     SCREEN_HEIGHT = 600
 
     def __init__(self):
