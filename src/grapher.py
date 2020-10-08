@@ -2,6 +2,7 @@ import pygame
 from random import random
 from src.entity import Entity
 from src.entity_manager import EntityManager
+from src.chart import Chart, Data
 from typing import List
 
 
@@ -13,7 +14,7 @@ class Grapher:
     __entity_manager: EntityManager
 
     # Constantes
-    SCREEN_WIDTH = 600
+    SCREEN_WIDTH = 900
     SCREEN_HEIGHT = 600
 
     def __init__(self):
@@ -28,6 +29,12 @@ class Grapher:
         self.__screen = pygame.display.set_mode((self.SCREEN_WIDTH, 
                                                 self.SCREEN_HEIGHT))
         pygame.display.set_caption("Pandemic Simulator")
+
+        self.__clock = pygame.time.Clock()
+
+        # Agregando graficos
+        self.chart1 = Chart((600, 10), (300, 100))
+        self.chart2 = Chart((600, 150), (300, 100))
 
     def add_entity(self, entity: Entity = None, infected: bool = False):
         """
@@ -62,9 +69,18 @@ class Grapher:
         Dibuja y actualiza todo lo que está dentro de graficador
         """
         self.__screen.fill((33, 33, 33))
+        self.__clock.tick(60)
 
         # Dibujando y actualizando entidades
         self.__entity_manager.draw_and_update(self.__screen)
 
-        
+        # Dibujando y actualizando graficoS
+        cantidad_update = self.__entity_manager.get_update_count()
+        if cantidad_update % 10 == 0:
+            self.chart1.add(Data(cantidad_update, self.__entity_manager.get_infected()))
+            fps = int(self.__clock.get_fps())
+            self.chart2.add(Data(cantidad_update, fps))
+        self.chart1.draw(self.__screen)
+        self.chart2.draw(self.__screen)
+
         pygame.display.update()

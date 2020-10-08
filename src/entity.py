@@ -4,13 +4,14 @@ from random import random
 from math import sqrt
 import pygame
 
+
 class Entity:
 
     # Posicion de la entidad
     _position: List[float, float]
     _target_position: List[float, float]
     _target_done: bool
-    
+
     # Variable de infeccion
     _infected: bool
 
@@ -21,11 +22,16 @@ class Entity:
     INFECT_PROB = 0.1
     INFECT_RADIO = 7
 
+    # Sistema inmune
+    MAX_INFECTED_ITERATIONS = 1000
+    __infected_iterations: int
+
     def __init__(self, position: List[float, float], infected: bool = False):
         self._position = position
         self._target_position = position
         self._target_done = False
         self.__infected = infected
+        self.__infected_iterations = 0
 
     def step(self):
         """
@@ -41,6 +47,12 @@ class Entity:
         self._target_done = abs(dx) < self.TARGET_DONE_RANGE and \
             abs(dy) < self.TARGET_DONE_RANGE
 
+        if self.__infected:
+            self.__infected_iterations += 1
+            if self.__infected_iterations >= self.MAX_INFECTED_ITERATIONS:
+                self.__infected = False
+                self.__infected_iterations = 0
+
     def infect(self, entity: Entity):
         """
         Esta funcion debe infectar a la entidad si está dentro del rango
@@ -51,7 +63,7 @@ class Entity:
 
         x1, y1 = self._position
         x2, y2 = entity.get_position()
-        
+
         distance = sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
         if distance < self.INFECT_RADIO and random() <= self.INFECT_PROB:
@@ -74,7 +86,7 @@ class Entity:
 
     def draw(self, surface: pygame.surface.Surface):
         color = [200, 0, 0] if self.__infected else (0, 200, 0)
-        
+
         casted_position = [self._position[0], self._position[1]]
         casted_position[0] = int(casted_position[0])
         casted_position[1] = int(casted_position[1])
@@ -84,4 +96,3 @@ class Entity:
                                self.INFECT_RADIO)
 
         pygame.draw.circle(surface, color, casted_position, 2)
-        
