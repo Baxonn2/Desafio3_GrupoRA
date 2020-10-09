@@ -1,7 +1,7 @@
 import pygame
 from random import random
 from src.entity import Entity
-from src.entity_manager import EntityManager
+from src.population import Population
 from src.chart import Chart, Data
 from typing import List
 
@@ -11,7 +11,7 @@ class Grapher:
     __done: bool
     __screen: pygame.surface.Surface
 
-    __entity_manager: EntityManager
+    __entity_manager: Population
 
     # Constantes
     SCREEN_WIDTH = 900
@@ -19,7 +19,7 @@ class Grapher:
 
     def __init__(self):
         # Creando manager de entidades
-        self.__entity_manager = EntityManager()
+        self.__entity_manager = Population()
 
         # Inicializando graficador
         self.__done = False
@@ -48,6 +48,9 @@ class Grapher:
                                        infectada. Por defecto es False.
         """
         self.__entity_manager.add_entity(entity, infected=infected)
+
+    def add_entities(self, population, infected, masks=0):
+        self.__entity_manager.add_entities(population, infected, masks)
 
     def run(self):
         """
