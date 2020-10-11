@@ -36,6 +36,10 @@ class Grapher:
         self.chart1 = Chart([600, 10], [300, 100])
         self.chart2 = Chart([600, 150], [300, 100])
 
+        # Renderizando el texto de cuarentena
+        self.__quarentine_font = pygame.font.SysFont(None, 32)
+        self.__quarentine_rendered = self.__quarentine_font.render('Quarentine Zone', True, (255,0,0))
+
     def add_entities(self, population, infected, masks=0, quarantine=None):
         """
         Agrega la cantidad de entidades solicitadas
@@ -88,7 +92,8 @@ class Grapher:
                                      self.SCREEN_WIDTH * 0.26,
                                      self.SCREEN_HEIGHT * 0.4), 2)
         # Texto de cuarentena. (Este texto causa el loading del principio)
-        self.__screen.blit(pygame.font.SysFont(None, 32).render('Quarentine Zone', True, (255,0,0)), (self.SCREEN_WIDTH*0.73,self.SCREEN_HEIGHT*0.91))
+        
+        self.__screen.blit(self.__quarentine_rendered, (self.SCREEN_WIDTH*0.73,self.SCREEN_HEIGHT*0.91))
 
         pygame.display.update()
 
