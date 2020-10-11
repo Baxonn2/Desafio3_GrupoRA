@@ -37,8 +37,8 @@ class Entity:
         Mueve la posicion de la entidad a su posicion objetivo
         """
         if self.is_alive:
-            dx = (self._x_target - self.x) / 20
-            dy = (self._y_target - self.y) / 20
+            dx = (self._x_target - self.x) / 20.0
+            dy = (self._y_target - self.y) / 20.0
 
             self.x += dx
             self.y += dy

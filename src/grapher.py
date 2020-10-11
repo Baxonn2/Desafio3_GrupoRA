@@ -93,7 +93,9 @@ class Grapher:
                                      self.SCREEN_HEIGHT * 0.4), 2)
         # Texto de cuarentena. (Este texto causa el loading del principio)
         
-        self.__screen.blit(self.__quarentine_rendered, (self.SCREEN_WIDTH*0.73,self.SCREEN_HEIGHT*0.91))
+        self.__screen.blit(self.__quarentine_rendered, 
+                          (self.SCREEN_WIDTH * 0.73,
+                           self.SCREEN_HEIGHT * 0.91))
 
         pygame.display.update()
 

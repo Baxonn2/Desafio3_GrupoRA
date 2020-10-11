@@ -132,7 +132,7 @@ class Population:
         Returns:
             int: Cantidad de iteraciones realizadas.
         """
-        return self.__update_count
+        return self.current_iteration
 
     def get_infected(self) -> int:
         return len(self.sick_entities)

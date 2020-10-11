@@ -69,8 +69,8 @@ class Chart:
         
         # TODO: arreglar compatiblidad con windows
         #* ? Optimize: esto se puede actualizar cuando se agrega un nuevo punto
-        self.__escala_x += (self.__target_escala_x - self.__escala_x) / 10
-        self.__escala_y += (self.__target_escala_y - self.__escala_y) / 10
+        self.__escala_x += (self.__target_escala_x - self.__escala_x) / 10.0
+        self.__escala_y += (self.__target_escala_y - self.__escala_y) / 10.0
         for i, data in enumerate(self.__data[:-1]):
             data_x = (data.get_x()-self.__min_x) * self.__escala_x + x
             data_y = h - data.get_y() * self.__escala_y + y
