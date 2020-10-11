@@ -118,6 +118,8 @@ class Entity:
                     self.is_immune = False
 
     def dead_by_infection(self):
+        if DEATH_PROB == 0:
+            return False
         probability = ((8 * pow((SICKNESS_DURATION / (2 * DIFF_PROB)), 3) / (
                     pow((self.sick_time - (SICKNESS_DURATION / 2)), 2) + 4 *
                     pow((SICKNESS_DURATION / (DIFF_PROB * 2)), 2)))) / (
