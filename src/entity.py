@@ -26,6 +26,7 @@ class Entity:
         self.is_recovered = False
         self.is_immune = False
         self.is_alive = True
+        self.is_at_quarentine = False
         self.has_mask = has_mask
 
         self.sick_time = 0

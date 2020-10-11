@@ -8,10 +8,12 @@ WORLD_HEIGHT = 600
 
 class Population:
 
-    def __init__(self, population=0, sick_entities=0, masks=0, algorithm='quadtree'):
+    def __init__(self, population=0, sick_entities=0, masks=0, algorithm='quadtree', quarentine_enabled=True):
         self.entities = []
         self.sick_entities = {}
         self.healthy_entities = {}
+        self.quarentine_enabled=quarentine_enabled
+        self.detection_delay = 70
         self.current_iteration = 0
         self.__update_count = 0
         self.algorithm = algorithm
@@ -66,6 +68,24 @@ class Population:
         new_infected = set()
 
         for infected_entity in self.sick_entities.values():
+            if self.quarentine_enabled and infected_entity.sick_time > self.detection_delay:
+                #se va a cuarnetena
+                if infected_entity.is_at_quarentine:
+                    if infected_entity.in_target():
+                        x = WORLD_WIDTH*1.1 + random.random()*WORLD_WIDTH*0.3 
+                        y = WORLD_HEIGHT*0.55 + random.random()*WORLD_HEIGHT*0.3
+                        infected_entity.set_target_position(x,y)
+                else:
+                    infected_entity.x = WORLD_WIDTH*1.05 + random.random()*WORLD_WIDTH*0.4 
+                    infected_entity.y = WORLD_HEIGHT*0.5 + random.random()*WORLD_HEIGHT*0.4
+                    infected_entity.set_target_position(infected_entity.x,infected_entity.y)
+                    infected_entity.is_at_quarentine=True
+
+                #infected_entity.y = WORLD_HEIGHT*0.6 + random.random()*WORLD_HEIGHT*0.3
+                # como está en cuarentena no infecta
+                continue
+
+
             x, y = infected_entity.x, infected_entity.y
             entities = quadtree.find_neighbors(x, y, infected_entity.radius())
 
@@ -93,10 +113,12 @@ class Population:
             infected = entity.is_infected
             entity.step()
 
-            if entity.in_target():
+            if entity.in_target() and not entity.is_at_quarentine:
                 x, y = random.random()*WORLD_WIDTH, random.random()*WORLD_HEIGHT
                 entity.set_target_position(x, y)
             if infected and not entity.is_infected:
+                if self.quarentine_enabled:
+                    entity.is_at_quarentine = False
                 self.sick_entities.pop(entity.person_id)
                 self.healthy_entities[entity.person_id] = entity
 

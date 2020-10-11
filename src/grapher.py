@@ -79,6 +79,11 @@ class Grapher:
         self.chart1.draw(self.__screen)
         self.chart2.draw(self.__screen)
 
+        #cuarentena
+        pygame.draw.rect(self.__screen, (255,0,0), pygame.Rect(self.SCREEN_WIDTH*0.7,self.SCREEN_HEIGHT*0.5,self.SCREEN_WIDTH*0.26,self.SCREEN_HEIGHT*0.4),2)
+        #Texto de cuarentena. (Este texto causa el loading del principio)
+        #self.__screen.blit(pygame.font.SysFont(None, 32).render('Quarentine Zone', True, (255,0,0)), (self.SCREEN_WIDTH*0.73,self.SCREEN_HEIGHT*0.91))
+
         pygame.display.update()
 
     # Metodos de dibujo privados
