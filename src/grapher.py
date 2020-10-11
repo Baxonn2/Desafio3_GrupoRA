@@ -6,7 +6,6 @@ from .parameters.status import STATUS_COLORS
 
 
 class Grapher:
-
     __done: bool
     __screen: pygame.surface.Surface
 
@@ -16,9 +15,10 @@ class Grapher:
     SCREEN_WIDTH = 900
     SCREEN_HEIGHT = 600
 
-    def __init__(self, algorithm = 'quadtree'):
+    def __init__(self, algorithm='quadtree', quarantine_enabled=True):
         # Creando manager de entidades
-        self.__entity_manager = Population(algorithm=algorithm)
+        self.__entity_manager = Population(algorithm=algorithm,
+                                           quarantine_enabled=quarantine_enabled)
         self.algorithm = algorithm
 
         # Inicializando graficador
@@ -26,8 +26,8 @@ class Grapher:
         pygame.init()
 
         # Configurando ventana
-        self.__screen = pygame.display.set_mode((self.SCREEN_WIDTH, 
-                                                self.SCREEN_HEIGHT))
+        self.__screen = pygame.display.set_mode((self.SCREEN_WIDTH,
+                                                 self.SCREEN_HEIGHT))
         pygame.display.set_caption("Pandemic Simulator")
 
         self.__clock = pygame.time.Clock()
@@ -36,14 +36,16 @@ class Grapher:
         self.chart1 = Chart([600, 10], [300, 100])
         self.chart2 = Chart([600, 150], [300, 100])
 
-    def add_entities(self, population, infected, masks=0):
+    def add_entities(self, population, infected, masks=0, quarantine=None):
         """
         Agrega la cantidad de entidades solicitadas
+        :param quarantine: Habilita o deshabilita la cuarentena en la poblacion
         :param population: Cantidad de entidades totales sanos + infectados
         :param infected: Cantidad de entidades infectadas
         :param masks: Probabilidad de que una entidad use mascarilla
         """
-        self.__entity_manager.add_entities(population, infected, masks)
+        self.__entity_manager.add_entities(population, infected, masks,
+                                           quarantine)
 
     def run(self):
         """
@@ -56,7 +58,7 @@ class Grapher:
                 if event.type == pygame.QUIT:
                     self.__done = True
                     break
-            
+
             # Actualizando pantalla
             self._draw_and_update()
 
@@ -79,10 +81,14 @@ class Grapher:
         self.chart1.draw(self.__screen)
         self.chart2.draw(self.__screen)
 
-        #cuarentena
-        pygame.draw.rect(self.__screen, (255,0,0), pygame.Rect(self.SCREEN_WIDTH*0.7,self.SCREEN_HEIGHT*0.5,self.SCREEN_WIDTH*0.26,self.SCREEN_HEIGHT*0.4),2)
-        #Texto de cuarentena. (Este texto causa el loading del principio)
-        #self.__screen.blit(pygame.font.SysFont(None, 32).render('Quarentine Zone', True, (255,0,0)), (self.SCREEN_WIDTH*0.73,self.SCREEN_HEIGHT*0.91))
+        # cuarentena
+        pygame.draw.rect(self.__screen, (255, 0, 0),
+                         pygame.Rect(self.SCREEN_WIDTH * 0.7,
+                                     self.SCREEN_HEIGHT * 0.5,
+                                     self.SCREEN_WIDTH * 0.26,
+                                     self.SCREEN_HEIGHT * 0.4), 2)
+        # Texto de cuarentena. (Este texto causa el loading del principio)
+        self.__screen.blit(pygame.font.SysFont(None, 32).render('Quarentine Zone', True, (255,0,0)), (self.SCREEN_WIDTH*0.73,self.SCREEN_HEIGHT*0.91))
 
         pygame.display.update()
 
