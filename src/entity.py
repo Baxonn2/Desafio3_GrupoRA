@@ -1,34 +1,8 @@
 import random
-from math import sqrt
-import pygame
-
-
-# Factores que reducen contagio
-MASK_FACTOR_SICK = 0.2
-MASK_FACTOR_HEALTHY = 0.6
-RECOVERED_FACTOR = 0.999
-
-# Probabilidad de muerte despues de 0.7 el avance total de la enfermedad
-DEATH_RATE_AFTER_07 = 0.01
-
-# Tiempos de enfermedad e inmunidad
-SICKNESS_DURATION = 1000
-IMMUNITY_DURATION = 3000
-
-# Probabilidad de extension del tiempo del inmunidad
-IMMUNITY_PROB_AFTER_TIME = 0.001
-
-# Radio de infeccion
-INFECT_RADIUS = 7
-MASK_RADIUS_INFECTION = 0.8
-
-# Probabilidades de contagio
-INFECT_PROB = 0.3
-IMMUNITY_FAIL = 0.000001
-
-# Probabilidades de recuperacion
-RECOVERY_AFTER_TIME = 0.9
-RECOVERY_BEFORE_TIME = 0.0001
+from math import sqrt, pow
+from .parameters.infection import *
+from .parameters.status import (HEALTHY, HEALTHY_MASK, INFECTED, INFECTED_MASK,
+                                IMMUNE, IMMUNE_MASK, DEAD)
 
 
 class Entity:
@@ -59,8 +33,8 @@ class Entity:
 
     def step(self):
         """
-                Esta funcion debe hacer que la entidad se actualice
-                """
+        Mueve la posicion de la entidad a su posicion objetivo
+        """
         if self.is_alive:
             dx = (self._x_target - self.x) / 20
             dy = (self._y_target - self.y) / 20
@@ -74,38 +48,66 @@ class Entity:
 
             self.update_status()
 
-    def set_target_position(self, x, y):
+    def set_target_position(self, x: float, y: float):
+        """
+        Actualiza la posicion objetivo de la entidad a las coordenadas entregadas
+
+        :param x: Posicion X en el mapa
+        :param y: Posicion y en el mapa
+        """
         self._x_target = x
         self._y_target = y
 
     def in_target(self):
+        """
+        Comprueba si la entidad se encuentra en su posicion objetivo.
+
+        :return: True si esta en el objetivo.
+        """
         return self._target_done
 
     def radius(self):
+        """
+        Calculo del radio de infeccion de la entidad.
+
+        :return:
+        """
         if self.has_mask:
             return INFECT_RADIUS * MASK_RADIUS_INFECTION
         return INFECT_RADIUS
 
     def update_status(self):
+        """
+        Actualiza el estado actual de la entidad. Comprueba si continua enfermo,
+        ha fallecido, se ha recuperado o se encuentra en un estado de inmunidad.
+
+        :return:
+        """
         if self.is_infected:
             self.sick_time += 1
             probability = random.random()
-            if probability <= DEATH_RATE_AFTER_07 and \
-                    self.sick_time / SICKNESS_DURATION >= 0.7:
+            # Calculo de probabilidad de morir luego de haber sobrevivido el 70%
+            # de la enfermedad
+            if self.dead_by_infection():
                 self.is_alive = False
                 self.is_infected = False
-
+            # Probabilidad de curarse antes del tiempo esperado
             elif probability <= RECOVERY_BEFORE_TIME:
                 self.is_infected = False
+            # Probabilidad de curarse luego del tiempo estimado para la
+            # enfermedad
             elif self.sick_time >= SICKNESS_DURATION and \
                     probability <= RECOVERY_AFTER_TIME:
                 self.is_infected = False
 
+            # Si ha dejado de estar infectad y sobrevive a la enfermedad,
+            # entonces gana el estado de inmunidad por N iteraciones
             if not self.is_infected and self.is_alive:
                 self.sick_time = 0
                 self.is_immune = True
                 self.is_recovered = True
 
+        # Actualizacion del estado de inmunidad
         if self.is_immune:
             self.immunity_time += 1
 
@@ -114,10 +116,23 @@ class Entity:
                     self.immunity_time = 0
                     self.is_immune = False
 
+    def dead_by_infection(self):
+        probability = ((8 * pow((SICKNESS_DURATION / (2 * DIFF_PROB)), 3) / (
+                    pow((self.sick_time - (SICKNESS_DURATION / 2)), 2) + 4 *
+                    pow((SICKNESS_DURATION / (DIFF_PROB * 2)), 2)))) / (
+                                  SICKNESS_DURATION / (DIFF_PROB * DEATH_PROB))
+
+        # probability = (8 * pow(DEATH_PROB, 3) /
+        #                (pow((self.sick_time - SICKNESS_DURATION), 2) +
+        #                 4 * pow(DEATH_PROB, 2)))
+        return random.random() <= probability
+
     def infect(self, entity):
         """
-        Esta funcion debe infectar a la entidad si está dentro del rango
-        que puede infectar.
+        Funcion encargada de infectar a otra entidad si es que esta dentro del
+        rango y la probabilidad fue suficiente
+
+        :param entity: Otra entidad a infectar
         """
         if not self.is_infected or not self.is_alive:
             return
@@ -143,35 +158,35 @@ class Entity:
         # a medida que la distancia sea mayor, menos probabilidades la otra
         # entidad tendra de contagiarse
         if distance < self.radius() and random.random() <= infection_value:
-            if random.random() >= distance/self.radius():
+            if random.random() >= distance / self.radius():
                 entity.is_infected = True
 
-    def draw(self, surface: pygame.surface.Surface):
+    def get_status(self):
         radius = INFECT_RADIUS
+        infecting = False
         if self.is_alive:
             if self.is_infected:
-                color = [200, 0, 0]
+                color = INFECTED
                 if self.has_mask:
-                    color = [200, 147, 0]
+                    color = INFECTED_MASK
                     radius = INFECT_RADIUS * MASK_RADIUS_INFECTION
             elif self.is_immune:
-                color = [0, 200, 200]
+                color = IMMUNE
                 if self.has_mask:
-                    color = [255, 255, 255]
+                    color = IMMUNE_MASK
             else:
-                color = [0, 200, 0]
+                color = HEALTHY
                 if self.has_mask:
-                    color = [200, 0, 200]
+                    color = HEALTHY_MASK
         else:
-            color = [102, 102, 102]
+            color = DEAD
 
         casted_position = [int(self.x), int(self.y)]
 
         if self.is_infected and random.random() < INFECT_PROB:
-            pygame.draw.circle(surface, color, casted_position,
-                               int(radius))
+            infecting = True
 
-        pygame.draw.circle(surface, color, casted_position, 2)
+        return [color, infecting, casted_position, radius]
 
 
 if __name__ == '__main__':

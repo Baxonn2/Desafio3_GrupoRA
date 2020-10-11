@@ -170,7 +170,7 @@ if __name__ == '__main__':
     for i in enti:
         quadTree.insert(i)
 
-    for i in quadTree.points_within_radius(250, 250, 100, 0.1):
+    for i in quadTree.find_neighbors(250, 250, 100,):
         print(i.x, i.y)
 
     while not exit:

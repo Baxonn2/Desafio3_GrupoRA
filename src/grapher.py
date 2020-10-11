@@ -1,9 +1,8 @@
 import pygame
-from random import random
 from src.entity import Entity
 from src.population import Population
 from src.chart import Chart, Data
-from typing import List
+from .parameters.status import STATUS_COLORS
 
 
 class Grapher:
@@ -17,9 +16,10 @@ class Grapher:
     SCREEN_WIDTH = 900
     SCREEN_HEIGHT = 600
 
-    def __init__(self):
+    def __init__(self, algorithm = 'quadtree'):
         # Creando manager de entidades
-        self.__entity_manager = Population()
+        self.__entity_manager = Population(algorithm=algorithm)
+        self.algorithm = algorithm
 
         # Inicializando graficador
         self.__done = False
@@ -33,23 +33,16 @@ class Grapher:
         self.__clock = pygame.time.Clock()
 
         # Agregando graficos
-        self.chart1 = Chart((600, 10), (300, 100))
-        self.chart2 = Chart((600, 150), (300, 100))
-
-    def add_entity(self, entity: Entity = None, infected: bool = False):
-        """
-        Agrega una nueva entidad al manager de entidades
-
-        Args:
-            entity (Entity, optional): Nueva entidad a agregar. Si no se define
-                                       esta entidad se creara una con parametros
-                                       aleatorios.
-            infected (bool, optional): Establece si la entidad esta o no
-                                       infectada. Por defecto es False.
-        """
-        self.__entity_manager.add_entity(entity, infected=infected)
+        self.chart1 = Chart([600, 10], [300, 100])
+        self.chart2 = Chart([600, 150], [300, 100])
 
     def add_entities(self, population, infected, masks=0):
+        """
+        Agrega la cantidad de entidades solicitadas
+        :param population: Cantidad de entidades totales sanos + infectados
+        :param infected: Cantidad de entidades infectadas
+        :param masks: Probabilidad de que una entidad use mascarilla
+        """
         self.__entity_manager.add_entities(population, infected, masks)
 
     def run(self):
@@ -66,17 +59,17 @@ class Grapher:
             
             # Actualizando pantalla
             self._draw_and_update()
-            
+
+    #  Metodo de dibujo protegido
     def _draw_and_update(self):
         """
-        Dibuja y actualiza todo lo que está dentro de graficador
+        Dibuja y actualiza todos los elementos dentro del graficador
         """
         self.__screen.fill((33, 33, 33))
         self.__clock.tick(60)
 
         # Dibujando y actualizando entidades
-        self.__entity_manager.draw_and_update(self.__screen)
-
+        self.__draw_population()
         # Dibujando y actualizando graficoS
         cantidad_update = self.__entity_manager.get_update_count()
         if cantidad_update % 10 == 0:
@@ -87,3 +80,28 @@ class Grapher:
         self.chart2.draw(self.__screen)
 
         pygame.display.update()
+
+    # Metodos de dibujo privados
+
+    def __draw_population(self):
+        """
+        Dibuja la poblacion y la actualiza
+        """
+        for entity in self.__entity_manager.entities:
+            self.__entity_manager.update_entity(entity)
+            # Dibujando entidad
+            self.__draw_entity(entity)
+        self.__entity_manager.update()
+
+    def __draw_entity(self, entity: Entity):
+        """
+        Dibuja la entidad seleccionada.
+
+        :param entity: Entidad seleccionada
+        """
+        status, infecting, position, radius = entity.get_status()
+
+        if infecting:
+            pygame.draw.circle(self.__screen, STATUS_COLORS[status],
+                               position, int(radius))
+        pygame.draw.circle(self.__screen, STATUS_COLORS[status], position, 2)

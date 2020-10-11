@@ -1,7 +1,6 @@
 from .entity import Entity
 import random
-from src.search.quadtree import Node
-import pygame
+from src.search.quadtree import Node as Node
 
 WORLD_WIDTH = 600
 WORLD_HEIGHT = 600
@@ -9,32 +8,37 @@ WORLD_HEIGHT = 600
 
 class Population:
 
-    def __init__(self, population=0, sick_entities=0, masks=0):
+    def __init__(self, population=0, sick_entities=0, masks=0, algorithm='quadtree'):
         self.entities = []
         self.sick_entities = {}
         self.healthy_entities = {}
         self.current_iteration = 0
         self.__update_count = 0
+        self.algorithm = algorithm
         if population > 0 or sick_entities > 0:
             self.add_entities(population, sick_entities, masks)
 
-    def add_entities(self, total_population, initial_sick, mask=0):
+    def add_entities(self, total_population: int, initial_sick: int,
+                     mask: float = 0):
         """
-        Agrega una nueva entidad al manager de entidades
+        Crea una poblacion de entidades.
 
-        Args:
-            entity (Entity, optional): Nueva entidad a agregar. Si no se define
-                                       esta entidad se creara una con parametros
-                                       aleatorios.
-            infected (bool, optional): Establece si la entidad esta o no
-                                       infectada. Por defecto es False.
+        :param total_population: cantidad total de entidades en la poblacion
+        :param initial_sick: cantidad de entidades enfermas al inicio de la
+                             propagacion de la enfermedad
+        :param mask: probabilidad entre 0 y 1 de que una entidad use mascara
         """
 
-        # Creating healthy entities
         total_sick = 1
+        if initial_sick > total_population:
+            raise ValueError("La cantidad de infectados es mayor al tamaño de la población")
+
         for i in range(total_population):
+            # Posicion inicial de la entidad
             x, y = random.random() * WORLD_WIDTH, random.random() * WORLD_HEIGHT
+            # Uso de mascara
             has_mask = mask > 0 and random.random() <= mask
+            # Primero crea a los infectados y luego a los sanos
             entity = Entity(x, y, total_sick <= initial_sick, has_mask)
             total_sick += 1
 
@@ -43,23 +47,16 @@ class Population:
                 self.sick_entities[entity.person_id] = entity
             else:
                 self.healthy_entities[entity.person_id] = entity
-        print(len(self.entities))
-        print(len(self.healthy_entities))
-        print(len(self.sick_entities))
 
-    def draw_and_update(self, screen: pygame.surface.Surface):
+    def update(self):
         """
         Actualiza y dibuja las entidades en pantalla
-
-        Args:
-            screen (pygame.surface.Surface): Superficie donde se va a dibujar.
         """
         self.current_iteration += 1
-        for entity in self.entities:
-            self.__update_entity(entity)
-            # Dibujando entidad
-            entity.draw(screen)
+        if self.algorithm == "quadtree":
+            self.__update_quadtree()
 
+    def __update_quadtree(self):
         # Buscando infectados
         quadtree = Node(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, WORLD_WIDTH / 2,
                         WORLD_HEIGHT / 2, 10)
@@ -70,9 +67,6 @@ class Population:
 
         for infected_entity in self.sick_entities.values():
             x, y = infected_entity.x, infected_entity.y
-            # entities = quadtree.points_within_radius(x, y,
-            #                                          infected_entity.radius(),
-            #                                          PRECISION)
             entities = quadtree.find_neighbors(x, y, infected_entity.radius())
 
             ids = []
@@ -86,7 +80,7 @@ class Population:
         for entity_id in new_infected:
             self.sick_entities[entity_id] = self.healthy_entities.pop(entity_id)
 
-    def __update_entity(self, entity: Entity):
+    def update_entity(self, entity: Entity):
         """
         Actualiza la entidad ingresada como parametro. También infecta a todas
         las que esta entidad puede infectar.
