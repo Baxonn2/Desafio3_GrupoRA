@@ -25,3 +25,6 @@ IMMUNITY_FAIL = 0.000001
 # Probabilidades de recuperacion
 RECOVERY_AFTER_TIME = 0.9
 RECOVERY_BEFORE_TIME = 0.0001
+
+# Tiempo de detección para entrar a cuarentena
+DETECTION_DELAY = 70

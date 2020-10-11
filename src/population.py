@@ -1,6 +1,7 @@
 from .entity import Entity
 import random
 from src.search.quadtree import Node as Node
+from src.parameters.infection import DETECTION_DELAY
 
 WORLD_WIDTH = 600
 WORLD_HEIGHT = 600
@@ -13,7 +14,7 @@ class Population:
         self.sick_entities = {}
         self.healthy_entities = {}
         self.quarentine_enabled=quarentine_enabled
-        self.detection_delay = 70
+        self.detection_delay = DETECTION_DELAY
         self.current_iteration = 0
         self.__update_count = 0
         self.algorithm = algorithm
