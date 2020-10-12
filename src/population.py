@@ -75,23 +75,13 @@ class Population:
             if self.quarantine_enabled and \
                     infected_entity.sick_time > infection.DETECTION_DELAY:
                 # se va a cuarnetena
-                if infected_entity.is_at_quarentine:
-                    if infected_entity.in_target():
-                        x = WORLD_WIDTH * 1.1 + random.random() * WORLD_WIDTH * 0.3
-                        y = WORLD_HEIGHT * 0.55 + random.random() * WORLD_HEIGHT * 0.3
-                        infected_entity.set_target_position(x, y)
-                else:
-                    infected_entity.x = WORLD_WIDTH * 1.05 + random.random() * WORLD_WIDTH * 0.4
-                    infected_entity.y = WORLD_HEIGHT * 0.5 + random.random() * WORLD_HEIGHT * 0.4
-                    infected_entity.set_target_position(infected_entity.x, infected_entity.y)
-                    infected_entity.is_at_quarentine = True
-
-                # infected_entity.y = WORLD_HEIGHT*0.6 + random.random()*WORLD_HEIGHT*0.3
+                infected_entity.send_to_quarantine(WORLD_WIDTH, WORLD_HEIGHT)
                 # como está en cuarentena no infecta
                 continue
 
-            x, y = infected_entity.x, infected_entity.y
-            entities = quadtree.find_neighbors(x, y, infected_entity.radius())
+            entities = quadtree.find_neighbors(infected_entity.x,
+                                               infected_entity.y,
+                                               infected_entity.radius())
 
             ids = []
             for i in entities:

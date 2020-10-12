@@ -124,8 +124,8 @@ class Entity:
                                  (2 * infection.DIFF_PROB)), 3) /
                         (pow((self.sick_time - (
                                 infection.SICKNESS_DURATION / 2)), 2) +
-                         4 *pow((infection.SICKNESS_DURATION /
-                                 (infection.DIFF_PROB * 2)), 2)))) / \
+                         4 * pow((infection.SICKNESS_DURATION /
+                                  (infection.DIFF_PROB * 2)), 2)))) / \
                       (infection.SICKNESS_DURATION /
                        (infection.DIFF_PROB * infection.DEATH_PROB))
 
@@ -167,6 +167,19 @@ class Entity:
         if distance < self.radius() and random.random() <= infection_value:
             if random.random() >= distance / self.radius():
                 entity.is_infected = True
+
+    def send_to_quarantine(self, width, height):
+        if self.is_at_quarentine:
+            if self.in_target():
+                x = width * (1.1 + random.random() * 0.3)
+                y = height * (0.55 + random.random() * 0.3)
+                self.set_target_position(x, y)
+        else:
+            self.x = width * (1.05 + random.random() * 0.4)
+            self.y = height * (0.5 + random.random() * 0.4)
+
+            self.set_target_position(self.x, self.y)
+            self.is_at_quarentine = True
 
     def get_status(self):
         radius = infection.INFECT_RADIUS

@@ -10,7 +10,7 @@ def main():
 
     # Agregando entidad infectada
     # Total, enfermos, probabilidad de usar mascarilla, cuarentena
-    grapher.add_entities(1000, 5, 0.1, False)
+    grapher.add_entities(1000, 5, 0.1, True)
 
     grapher.run()
     print("Fin del programa")
