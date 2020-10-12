@@ -1,7 +1,7 @@
 from .entity import Entity
 import random
 from src.search.quadtree import Node as Node
-from src.parameters.infection import DETECTION_DELAY
+from src.parameters import infection
 
 WORLD_WIDTH = 600
 WORLD_HEIGHT = 600
@@ -72,7 +72,8 @@ class Population:
         new_infected = set()
 
         for infected_entity in self.sick_entities.values():
-            if self.quarantine_enabled and infected_entity.sick_time > DETECTION_DELAY:
+            if self.quarantine_enabled and \
+                    infected_entity.sick_time > infection.DETECTION_DELAY:
                 # se va a cuarnetena
                 if infected_entity.is_at_quarentine:
                     if infected_entity.in_target():

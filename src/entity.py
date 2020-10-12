@@ -1,6 +1,6 @@
 import random
 from math import sqrt, pow
-from .parameters.infection import *
+from .parameters import infection
 from .parameters.status import (HEALTHY, HEALTHY_MASK, INFECTED, INFECTED_MASK,
                                 IMMUNE, IMMUNE_MASK, DEAD)
 
@@ -74,8 +74,8 @@ class Entity:
         :return:
         """
         if self.has_mask:
-            return INFECT_RADIUS * MASK_RADIUS_INFECTION
-        return INFECT_RADIUS
+            return infection.INFECT_RADIUS * infection.MASK_RADIUS_INFECTION
+        return infection.INFECT_RADIUS
 
     def update_status(self):
         """
@@ -93,12 +93,12 @@ class Entity:
                 self.is_alive = False
                 self.is_infected = False
             # Probabilidad de curarse antes del tiempo esperado
-            elif probability <= RECOVERY_BEFORE_TIME:
+            elif probability <= infection.RECOVERY_BEFORE_TIME:
                 self.is_infected = False
             # Probabilidad de curarse luego del tiempo estimado para la
             # enfermedad
-            elif self.sick_time >= SICKNESS_DURATION and \
-                    probability <= RECOVERY_AFTER_TIME:
+            elif self.sick_time >= infection.SICKNESS_DURATION and \
+                    probability <= infection.RECOVERY_AFTER_TIME:
                 self.is_infected = False
 
             # Si ha dejado de estar infectad y sobrevive a la enfermedad,
@@ -112,18 +112,22 @@ class Entity:
         if self.is_immune:
             self.immunity_time += 1
 
-            if self.immunity_time >= IMMUNITY_DURATION:
-                if random.random() <= IMMUNITY_PROB_AFTER_TIME:
+            if self.immunity_time >= infection.IMMUNITY_DURATION:
+                if random.random() <= infection.IMMUNITY_PROB_AFTER_TIME:
                     self.immunity_time = 0
                     self.is_immune = False
 
     def dead_by_infection(self):
-        if DEATH_PROB == 0:
+        if infection.DEATH_PROB == 0:
             return False
-        probability = ((8 * pow((SICKNESS_DURATION / (2 * DIFF_PROB)), 3) / (
-                    pow((self.sick_time - (SICKNESS_DURATION / 2)), 2) + 4 *
-                    pow((SICKNESS_DURATION / (DIFF_PROB * 2)), 2)))) / (
-                                  SICKNESS_DURATION / (DIFF_PROB * DEATH_PROB))
+        probability = ((8 * pow((infection.SICKNESS_DURATION /
+                                 (2 * infection.DIFF_PROB)), 3) /
+                        (pow((self.sick_time - (
+                                infection.SICKNESS_DURATION / 2)), 2) +
+                         4 *pow((infection.SICKNESS_DURATION /
+                                 (infection.DIFF_PROB * 2)), 2)))) / \
+                      (infection.SICKNESS_DURATION /
+                       (infection.DIFF_PROB * infection.DEATH_PROB))
 
         # probability = (8 * pow(DEATH_PROB, 3) /
         #                (pow((self.sick_time - SICKNESS_DURATION), 2) +
@@ -146,15 +150,15 @@ class Entity:
 
         distance = sqrt((self.x - x2) ** 2 + (self.y - y2) ** 2)
 
-        infection_value = INFECT_PROB
+        infection_value = infection.INFECT_PROB
         if entity.is_immune:
-            infection_value *= IMMUNITY_FAIL
+            infection_value *= infection.IMMUNITY_FAIL
         if entity.has_mask:
-            infection_value *= MASK_FACTOR_HEALTHY
+            infection_value *= infection.MASK_FACTOR_HEALTHY
         if self.has_mask:
-            infection_value *= MASK_FACTOR_SICK
+            infection_value *= infection.MASK_FACTOR_SICK
         if entity.is_recovered:
-            infection_value *= RECOVERED_FACTOR
+            infection_value *= infection.RECOVERED_FACTOR
 
         # La probabilidad de infectarse depende del radio de infeccion de la
         # entidad infecciosa. Este radio cambia si la entidad tiene mascarilla
@@ -165,14 +169,15 @@ class Entity:
                 entity.is_infected = True
 
     def get_status(self):
-        radius = INFECT_RADIUS
+        radius = infection.INFECT_RADIUS
         infecting = False
         if self.is_alive:
             if self.is_infected:
                 color = INFECTED
                 if self.has_mask:
                     color = INFECTED_MASK
-                    radius = INFECT_RADIUS * MASK_RADIUS_INFECTION
+                    radius = infection.INFECT_RADIUS * \
+                             infection.MASK_RADIUS_INFECTION
             elif self.is_immune:
                 color = IMMUNE
                 if self.has_mask:
@@ -186,7 +191,7 @@ class Entity:
 
         casted_position = [int(self.x), int(self.y)]
 
-        if self.is_infected and random.random() < INFECT_PROB:
+        if self.is_infected and random.random() < infection.INFECT_PROB:
             infecting = True
 
         return [color, infecting, casted_position, radius]

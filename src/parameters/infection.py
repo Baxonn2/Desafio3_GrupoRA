@@ -4,7 +4,7 @@ MASK_FACTOR_HEALTHY = 0.6
 RECOVERED_FACTOR = 0.999
 
 # Modificadores para curva de agnesi
-DEATH_PROB = 0.0
+DEATH_PROB = 1
 DIFF_PROB = 20
 
 # Tiempos de enfermedad e inmunidad

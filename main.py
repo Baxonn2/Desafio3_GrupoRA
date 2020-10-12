@@ -1,12 +1,15 @@
 import random
+import src.parameters.load_instance_file as load
+from src.grapher import Grapher
 
 
 def main():
-    from src.grapher import Grapher
+
+    load.load_parameters('data.json')
     grapher = Grapher()
 
     # Agregando entidad infectada
-    # Total, enfermos, probabilidad de usar mascarilla
+    # Total, enfermos, probabilidad de usar mascarilla, cuarentena
     grapher.add_entities(1000, 5, 0.1, False)
 
     grapher.run()
