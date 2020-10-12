@@ -33,8 +33,9 @@ class Grapher:
         self.__clock = pygame.time.Clock()
 
         # Agregando graficos
-        self.chart1 = Chart([600, 10], [300, 100])
-        self.chart2 = Chart([600, 150], [300, 100])
+        self.chart1 = Chart([600, 10], [300, 50])
+        self.chart2 = Chart([600, 100], [300, 50])
+        self.chart3 = Chart([600, 190], [300, 50])
 
         # Renderizando el texto de cuarentena
         self.__quarantine_font = pygame.font.SysFont(None, 32)
@@ -77,15 +78,17 @@ class Grapher:
 
         # Dibujando y actualizando entidades
         self.__draw_population()
-        # Dibujando y actualizando graficoS
+        
+        # Dibujando y actualizando graficos
         cantidad_update = self.__entity_manager.get_update_count()
         if cantidad_update % 10 == 0:
             self.chart1.add(Data(cantidad_update,
                                  self.__entity_manager.get_infected()))
-            fps = int(self.__clock.get_fps())
-            self.chart2.add(Data(cantidad_update, fps))
+            self.chart2.add(Data(cantidad_update, self.__entity_manager.get_healthy()))
+            self.chart3.add(Data(cantidad_update, self.__entity_manager.get_deads()))
         self.chart1.draw(self.__screen)
         self.chart2.draw(self.__screen)
+        self.chart3.draw(self.__screen)
 
         # cuarentena
         pygame.draw.rect(self.__screen, (255, 0, 0),

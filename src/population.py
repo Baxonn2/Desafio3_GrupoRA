@@ -14,6 +14,7 @@ class Population:
         self.entities = []
         self.sick_entities = {}
         self.healthy_entities = {}
+        self.deads_entites = {}
         self.quarantine_enabled = quarantine_enabled
         self.current_iteration = 0
         self.__update_count = 0
@@ -115,6 +116,9 @@ class Population:
                     entity.is_at_quarentine = False
                 self.sick_entities.pop(entity.person_id)
                 self.healthy_entities[entity.person_id] = entity
+            
+            if not entity.is_alive:
+                self.deads_entites[entity.person_id] = entity
 
     def get_update_count(self) -> int:
         """
@@ -127,3 +131,9 @@ class Population:
 
     def get_infected(self) -> int:
         return len(self.sick_entities)
+
+    def get_healthy(self) -> int:
+        return len(self.healthy_entities)
+
+    def get_deads(self) -> int:
+        return len(self.deads_entites)

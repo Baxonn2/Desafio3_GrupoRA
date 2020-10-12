@@ -40,7 +40,7 @@ class Entity:
             dx = (self._x_target - self.x) / 20
             dy = (self._y_target - self.y) / 20
 
-            MAX = 2
+            MAX = 1
 
             if abs(dx) > MAX:
                 dx = MAX if dx > 0 else -MAX

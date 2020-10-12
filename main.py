@@ -46,11 +46,11 @@ def main_wrapper(argv):
         elif opt in ("-s", "--seed"):
             seed = arg
         elif opt in ("-e", "--entities"):
-            entities = arg
+            entities = int(arg)
         elif opt in ("-i", "--infected"):
-            infected = arg
+            infected = int(arg)
         elif opt in ("-m", "--masks-prob"):
-            face_masks = arg
+            face_masks = float(arg)
         elif opt in ("-in", "--instance"):
             instance = arg
         elif opt in ("-q", "--quarantine"):
