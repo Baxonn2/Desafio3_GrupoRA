@@ -66,9 +66,8 @@ class Chart:
         w, h = self.__dimension
 
         # pygame.draw.rect(surface, (44, 44, 44), (x, y, w, h))
-        
-        # TODO: arreglar compatiblidad con windows
-        #* ? Optimize: esto se puede actualizar cuando se agrega un nuevo punto
+
+        # * ? Optimize: esto se puede actualizar cuando se agrega un nuevo punto
         self.__escala_x += (self.__target_escala_x - self.__escala_x) / 10.0
         self.__escala_y += (self.__target_escala_y - self.__escala_y) / 10.0
         for i, data in enumerate(self.__data[:-1]):
