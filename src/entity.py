@@ -7,7 +7,7 @@ from .parameters.status import (HEALTHY, HEALTHY_MASK, INFECTED, INFECTED_MASK,
 
 class Entity:
     # Constantes de posicionamiento
-    TARGET_DONE_RANGE = 0.1
+    TARGET_DONE_RANGE = 0.5
     PERSON_ID = 0
 
     def __init__(self, x, y, is_infected=False, has_mask=False):
@@ -37,8 +37,15 @@ class Entity:
         Mueve la posicion de la entidad a su posicion objetivo
         """
         if self.is_alive:
-            dx = (self._x_target - self.x) / 20.0
-            dy = (self._y_target - self.y) / 20.0
+            dx = (self._x_target - self.x) / 20
+            dy = (self._y_target - self.y) / 20
+
+            MAX = 2
+
+            if abs(dx) > MAX:
+                dx = MAX if dx > 0 else -MAX
+            if abs(dy) > MAX:
+                dy = MAX if dy > 0 else -MAX
 
             self.x += dx
             self.y += dy
