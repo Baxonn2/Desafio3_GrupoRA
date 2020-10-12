@@ -72,6 +72,7 @@ class Population:
         new_infected = set()
 
         for infected_entity in self.sick_entities.values():
+
             if self.quarantine_enabled and \
                     infected_entity.sick_time > infection.DETECTION_DELAY:
                 # se va a cuarnetena
@@ -82,7 +83,6 @@ class Population:
             entities = quadtree.find_neighbors(infected_entity.x,
                                                infected_entity.y,
                                                infected_entity.radius())
-
             ids = []
             for i in entities:
                 infected_entity.infect(i)
