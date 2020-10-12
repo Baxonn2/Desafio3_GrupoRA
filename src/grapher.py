@@ -37,8 +37,9 @@ class Grapher:
         self.chart2 = Chart([600, 150], [300, 100])
 
         # Renderizando el texto de cuarentena
-        self.__quarentine_font = pygame.font.SysFont(None, 32)
-        self.__quarentine_rendered = self.__quarentine_font.render('Quarentine Zone', True, (255,0,0))
+        self.__quarantine_font = pygame.font.SysFont(None, 32)
+        self.__quarantine_rendered = self.__quarantine_font.render(
+            'Quarantine Zone', True, (255, 0, 0))
 
     def add_entities(self, population, infected, masks=0, quarantine=None):
         """
@@ -79,7 +80,8 @@ class Grapher:
         # Dibujando y actualizando graficoS
         cantidad_update = self.__entity_manager.get_update_count()
         if cantidad_update % 10 == 0:
-            self.chart1.add(Data(cantidad_update, self.__entity_manager.get_infected()))
+            self.chart1.add(Data(cantidad_update,
+                                 self.__entity_manager.get_infected()))
             fps = int(self.__clock.get_fps())
             self.chart2.add(Data(cantidad_update, fps))
         self.chart1.draw(self.__screen)
@@ -93,9 +95,9 @@ class Grapher:
                                      self.SCREEN_HEIGHT * 0.4), 2)
         # Texto de cuarentena. (Este texto causa el loading del principio)
         
-        self.__screen.blit(self.__quarentine_rendered, 
-                          (self.SCREEN_WIDTH * 0.73,
-                           self.SCREEN_HEIGHT * 0.91))
+        self.__screen.blit(self.__quarantine_rendered,
+                           (self.SCREEN_WIDTH * 0.73,
+                            self.SCREEN_HEIGHT * 0.91))
 
         pygame.display.update()
 

@@ -1,7 +1,7 @@
 from .entity import Entity
 import random
 from src.search.quadtree import Node as Node
-from src.parameters.infection import DETECTION_DELAY
+from src.parameters import infection
 
 WORLD_WIDTH = 600
 WORLD_HEIGHT = 600
@@ -72,26 +72,17 @@ class Population:
         new_infected = set()
 
         for infected_entity in self.sick_entities.values():
-            if self.quarantine_enabled and infected_entity.sick_time > DETECTION_DELAY:
-                # se va a cuarnetena
-                if infected_entity.is_at_quarentine:
-                    if infected_entity.in_target():
-                        x = WORLD_WIDTH * 1.1 + random.random() * WORLD_WIDTH * 0.3
-                        y = WORLD_HEIGHT * 0.55 + random.random() * WORLD_HEIGHT * 0.3
-                        infected_entity.set_target_position(x, y)
-                else:
-                    infected_entity.x = WORLD_WIDTH * 1.05 + random.random() * WORLD_WIDTH * 0.4
-                    infected_entity.y = WORLD_HEIGHT * 0.5 + random.random() * WORLD_HEIGHT * 0.4
-                    infected_entity.set_target_position(infected_entity.x, infected_entity.y)
-                    infected_entity.is_at_quarentine = True
 
-                # infected_entity.y = WORLD_HEIGHT*0.6 + random.random()*WORLD_HEIGHT*0.3
+            if self.quarantine_enabled and \
+                    infected_entity.sick_time > infection.DETECTION_DELAY:
+                # se va a cuarnetena
+                infected_entity.send_to_quarantine(WORLD_WIDTH, WORLD_HEIGHT)
                 # como está en cuarentena no infecta
                 continue
 
-            x, y = infected_entity.x, infected_entity.y
-            entities = quadtree.find_neighbors(x, y, infected_entity.radius())
-
+            entities = quadtree.find_neighbors(infected_entity.x,
+                                               infected_entity.y,
+                                               infected_entity.radius())
             ids = []
             for i in entities:
                 infected_entity.infect(i)

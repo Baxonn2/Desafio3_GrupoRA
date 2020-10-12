@@ -1,8 +1,4 @@
-import math
-
-
 class Node:
-
     NODE_ID = 1
 
     def __init__(self, x, y, w, h, capacity, parent=None):
@@ -19,16 +15,24 @@ class Node:
         self.entities = []
         self.divided = False
         self.parent = parent
+        self.upper_right_child = None
+        self.upper_left_child = None
+        self.down_right_child = None
+        self.down_left_child = None
 
     def contains(self, x, y):
         return self.x + self.w > x >= self.x - self.w and \
                self.y + self.h > y >= self.y - self.h
 
     def subdivide(self):
-        self.upper_right_child = Node(self.x + self.w / 2, self.y - self.h / 2, self.w / 2, self.h / 2, self.capacity, self)
-        self.upper_left_child = Node(self.x - self.w / 2, self.y - self.h / 2, self.w / 2, self.h / 2, self.capacity, self)
-        self.down_right_child = Node(self.x + self.w / 2, self.y + self.h / 2, self.w / 2, self.h / 2, self.capacity, self)
-        self.down_left_child = Node(self.x - self.w / 2, self.y + self.h / 2, self.w / 2, self.h / 2, self.capacity, self)
+        self.upper_right_child = Node(self.x + self.w / 2, self.y - self.h / 2,
+                                      self.w / 2, self.h / 2, self.capacity, self)
+        self.upper_left_child = Node(self.x - self.w / 2, self.y - self.h / 2,
+                                     self.w / 2, self.h / 2, self.capacity, self)
+        self.down_right_child = Node(self.x + self.w / 2, self.y + self.h / 2,
+                                     self.w / 2, self.h / 2, self.capacity, self)
+        self.down_left_child = Node(self.x - self.w / 2, self.y + self.h / 2,
+                                    self.w / 2, self.h / 2, self.capacity, self)
         self.divided = True
 
         for entity in self.entities:
@@ -53,10 +57,10 @@ class Node:
             self.down_right_child.insert(entity)
 
     def find_neighbors(self, x, y, radius):
-        points = [(x+radius, y),
-                  (x-radius, y),
-                  (x, y+radius),
-                  (x, y-radius)]
+        points = [(x + radius, y),
+                  (x - radius, y),
+                  (x, y + radius),
+                  (x, y - radius)]
 
         base_node = self.find_node(x, y)
         contains_all = False
@@ -77,37 +81,16 @@ class Node:
             if self.divided:
                 if self.upper_left_child.contains(x, y):
                     return self.upper_left_child.find_node(x, y)
-                elif self.upper_right_child.contains(x,y):
+                elif self.upper_right_child.contains(x, y):
                     return self.upper_right_child.find_node(x, y)
-                elif self.down_left_child.contains(x,y):
+                elif self.down_left_child.contains(x, y):
                     return self.down_left_child.find_node(x, y)
-                elif self.down_right_child.contains(x,y):
+                elif self.down_right_child.contains(x, y):
                     return self.down_right_child.find_node(x, y)
             else:
                 return self
         else:
             return None
-
-    def get_leaf(self, x, y):
-        if not self.divided:
-            if self.contains(x, y):
-                return self.entities
-            else:
-                return []
-        else:
-            ret = []
-
-            for i in self.upper_right_child.get_leaf(x, y):
-                ret.append(i)
-            for i in self.upper_left_child.get_leaf(x, y):
-                ret.append(i)
-            for i in self.down_right_child.get_leaf(x, y):
-                ret.append(i)
-            for i in self.down_left_child.get_leaf(x, y):
-                ret.append(i)
-
-            fixed_ret = [x for x in ret if x]
-            return fixed_ret
 
     def get_leaves(self):
         entities = []
@@ -121,7 +104,9 @@ class Node:
         return entities
 
     def draw(self, screen, color):
-        pygame.draw.rect(screen, color, pygame.Rect(self.x - self.w, self.y - self.h, self.w * 2, self.h * 2), 1)
+        pygame.draw.rect(screen, color, pygame.Rect(self.x - self.w,
+                                                    self.y - self.h, self.w * 2,
+                                                    self.h * 2), 1)
         if self.divided:
             self.upper_left_child.draw(screen, color)
             self.upper_right_child.draw(screen, color)
@@ -129,21 +114,21 @@ class Node:
             self.down_right_child.draw(screen, color)
 
 
-class Entity:
-    def __init__(self, w, h, aid):
-        self.x, self.y = (random.random() * w, random.random() * h)
-        self.aid = aid
-
-    def move(self):
-        x = self.x + random.random() * 2 - 1
-        y = self.y + random.random() * 2 - 1
-        self.x, self.y = (x, y)
-
-
 if __name__ == '__main__':
     import random
     import pygame
-    import math
+
+
+    class Entity:
+        def __init__(self, w, h, aid):
+            self.x, self.y = (random.random() * w, random.random() * h)
+            self.aid = aid
+
+        def move(self):
+            x = self.x + random.random() * 2 - 1
+            y = self.y + random.random() * 2 - 1
+            self.x, self.y = (x, y)
+
 
     w = 500
     h = 500
@@ -160,7 +145,7 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode((w, h))
     pygame.display.set_caption("Pandemic Simulator")
 
-    exit = False
+    exit_ = False
     quadTree = Node(w / 2, h / 2, w / 2, h / 2, 4)
 
     enti = []
@@ -170,13 +155,13 @@ if __name__ == '__main__':
     for i in enti:
         quadTree.insert(i)
 
-    for i in quadTree.find_neighbors(250, 250, 100,):
+    for i in quadTree.find_neighbors(250, 250, 100, ):
         print(i.x, i.y)
 
-    while not exit:
+    while not exit_:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                exit = True
+                exit_ = True
 
         screen.fill(colors['black'])
         for i in enti:
@@ -185,9 +170,6 @@ if __name__ == '__main__':
         quadTree.draw(screen, colors['red'])
 
         pygame.display.update()
-
-        # for i in enti:
-        # i.move()
 
         quadTree = Node(w / 2, h / 2, w / 2, h / 2, 4)
         for i in enti:
