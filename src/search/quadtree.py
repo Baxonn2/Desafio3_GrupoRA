@@ -1,9 +1,16 @@
+import math
+
+
 class Node:
     NODE_ID = 1
+    max_w = 0
+    max_h = 0
 
     def __init__(self, x, y, w, h, capacity, parent=None):
         if parent is None:
             Node.NODE_ID = 1
+            Node.max_w = w
+            Node.max_h = h
         else:
             Node.NODE_ID += 1
         self.n_id = Node.NODE_ID
@@ -57,24 +64,92 @@ class Node:
             self.down_right_child.insert(entity)
 
     def find_neighbors(self, x, y, radius):
-        points = [(x + radius, y),
-                  (x - radius, y),
-                  (x, y + radius),
-                  (x, y - radius)]
+        points = []
+
+        if x+radius < Node.max_w:
+            points.append((x+radius, y))
+        if x-radius > 0:
+            points.append((x - radius, y))
+        if y+radius < Node.max_h:
+            points.append((x, y + radius))
+        if y-radius > 0:
+            points.append((x, y - radius))
+
+        is_parent = False
 
         base_node = self.find_node(x, y)
         contains_all = False
 
         while not contains_all:
-            if base_node.parent is not None:
+            if base_node.parent is None:
                 break
             contains_all = True
-            for x_, y_ in points:
+            for _ in points:
+                x_, y_ = _[0], _[1]
                 if not base_node.contains(x_, y_):
                     contains_all = False
                     base_node = base_node.parent
-        entities = base_node.get_leaves()
-        return entities
+                    is_parent = True
+
+        entities = []
+
+        if is_parent:
+            upper_right = False
+            down_right = False
+            upper_left = False
+            down_left = False
+            if (base_node.upper_right_child.contains(x+radius, y) or
+                base_node.upper_right_child.contains(x - radius, y) or
+                base_node.upper_right_child.contains(x, y + radius) or
+                base_node.upper_right_child.contains(x, y - radius)
+                ):
+                upper_right = True
+            if (base_node.upper_left_child.contains(x + radius, y) or
+                    base_node.upper_left_child.contains(x - radius, y) or
+                    base_node.upper_left_child.contains(x, y + radius) or
+                    base_node.upper_left_child.contains(x, y - radius)
+            ):
+                upper_left = True
+            if (base_node.down_right_child.contains(x+radius, y) or
+                base_node.down_right_child.contains(x - radius, y) or
+                base_node.down_right_child.contains(x, y + radius) or
+                base_node.down_right_child.contains(x, y - radius)
+                ):
+                down_right = True
+            if (base_node.down_left_child.contains(x + radius, y) or
+                    base_node.down_left_child.contains(x - radius, y) or
+                    base_node.down_left_child.contains(x, y + radius) or
+                    base_node.down_left_child.contains(x, y - radius)
+            ):
+                down_left = True
+
+            if (upper_left and down_right) or (upper_right and down_left):
+                entities += base_node.upper_right_child.get_leaves()
+                entities += base_node.upper_left_child.get_leaves()
+                entities += base_node.down_right_child.get_leaves()
+                entities += base_node.down_left_child.get_leaves()
+            else:
+                if upper_right:
+                    entities += base_node.upper_right_child.get_leaves()
+                if upper_left:
+                    entities += base_node.upper_left_child.get_leaves()
+                if down_right:
+                    entities += base_node.down_right_child.get_leaves()
+                if down_left:
+                    entities += base_node.down_left_child.get_leaves()
+        else:
+            entities = base_node.get_leaves()
+
+        final_entities = []
+
+        for entity in entities:
+            if self.euclidean_distance(x, y, entity.x, entity.y) <= radius:
+                final_entities.append(entity)
+
+        return final_entities
+
+    def euclidean_distance(self, x1, y1, x2, y2):
+        return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
     def find_node(self, x, y):
         if self.contains(x, y):
