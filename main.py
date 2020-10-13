@@ -29,7 +29,7 @@ def main_wrapper(argv):
     instance = None
 
     try:
-        opts, args = getopt.getopt(argv, "qhs:e:i:m:in:",
+        opts, args = getopt.getopt(argv, "qhs:e:i:m:f:",
                                    ["seed=",
                                     "entities=",
                                     "infected=",
@@ -37,11 +37,11 @@ def main_wrapper(argv):
                                     "instance=",
                                     ])
     except getopt.GetoptError:
-        print('main.py -s <seed> -e <entities> -i <infected> -m <masks prob> -in <instance>')
+        print('main.py -s <seed> -e <entities> -i <infected> -m <masks prob> -f <instance>')
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print('main.py -s <seed> -e <entities> -i <infected> -m <masks prob> -in <instance>')
+            print('main.py -s <seed> -e <entities> -i <infected> -m <masks prob> -f <instance>')
             sys.exit()
         elif opt in ("-s", "--seed"):
             seed = arg
@@ -51,7 +51,7 @@ def main_wrapper(argv):
             infected = int(arg)
         elif opt in ("-m", "--masks-prob"):
             face_masks = float(arg)
-        elif opt in ("-in", "--instance"):
+        elif opt in ("-f", "--instance"):
             instance = arg
         elif opt in ("-q", "--quarantine"):
             quarantine = True
