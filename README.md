@@ -5,14 +5,14 @@ Requiere python 3 y pygame v1.96.
 
 Al momento de ejecutar el código se puede utilizar el siguiente comando.
 
-    $ python3 main.py -s <seed> -e <entities> -i <infected> -m <masks prob> -in <instance>
+    $ python3 main.py -s <seed> -e <entities> -i <infected> -m <masks prob> -f <instance>
 
 El código se puede ejecutar sin argumentos o con cualquiera de los presentados:
 - -s --seed: semilla aleatoria para la ejecución. Por defecto 42.
 - -e --entities: cantidad de entidades a utilizar. Por defecto 1000.
 - -i --infected: cantidad de entidades infectadas. Por defecto 5.
 - -m --masks-probability: probabilidad de que una entidad use mascarilla. Por defecto 0.
-- -in --instance: ruta a archivo formato .json con valores de parámetros sobre contagios, radios de contagios, recuperación, etc. Por defecto None.
+- -f --instance: ruta a archivo formato .json con valores de parámetros sobre contagios, radios de contagios, recuperación, etc. Por defecto None.
 - -q --quarantine: habilita la cuarentena. Por defecto no se encuentra habilitada. 
 
 
@@ -66,36 +66,25 @@ Clase que se ocupa de manejar todas las entidades, además de la cuarentena en c
 - healthy_entities: Diccionario que contiene las entidades presentes en el listado de entidades que no estén contagias. 
 - quarantien_enabled: Bool que indica si la cuarentena esta activa. 
 
-## Parametros de contagio
+## Parametros de Contagio, Mortalidad y Recuperación
 ---
 
-- MASK_FACTOR_SICK: Valor entre 0 y 1, mientras más cercano a cero, menor será la probabilidad de contagiar a otra entidad
-- MASK_FACTOR_HEALTHY: Valor entre 0 y 1, mientras más cercano a cero, menor será la probabilidad de ser contagiado
-- RECOVERED_FACTOR: Valor entre 0 y 1, indica la probabilidad de recontagio de una persona luego de su periodo de inmunidad
-
-Cuando una enfermedad es mortal, se define su tasa de mortalidad y un factor de modificación a la curva de mortalidad. Esta curva sigue el comportamiento de una curva de agnesi, está alterada de acuerdo a la duración de la enfermedad y el factor de modificación
-
+- MASK_FACTOR_SICK: Valor entre 0 y 1, mientras más cercano a cero, menor será la probabilidad de contagiar a otra entidad.
+- MASK_FACTOR_HEALTHY: Valor entre 0 y 1, mientras más cercano a cero, menor será la probabilidad de ser contagiado.
+- RECOVERED_FACTOR: Valor entre 0 y 1, indica la probabilidad de recontagio de una persona luego de su periodo de inmunidad.
+Cuando una enfermedad es mortal, se define su tasa de mortalidad y un factor de modificación a la curva de mortalidad. Esta curva sigue el comportamiento de una curva de agnesi, está alterada de acuerdo a la duración de la enfermedad y el factor de modificación.
 - DEATH_PROB: valor entre 0 y 1 que representa la tasa de mortalidad de una enfermedad. Importante, aunque tome valor 1, los contagiados pueden sobrevivir si se recuperan en periodos tempranos del contagio.
-
 - DIFF_PROB: Valor numérico, modificador de la curva de mortalidad haciéndola más abierta o cerrada en el centro.
-
 - SICKNESS_DURATION: Valor entero, representa la duración de la enfermedad en iteraciones.
-
-- IMMUNITY_DURATION: Duración del periodo de inmunidad luego de que la entidad se haya recuperado
-
-- IMMUNITY_PROB_AFTER_TIME: Valor entre 0 y 1, representa la probabilidad de extender el periodo de inmunidad adquirida
-
-- INFECT_RADIUS: Valor entero, indica el radio por defecto en el cual una entidad puede infectar a otras
-- MASK_RADIUS_INFECTION: Valor entre 0 y 1. Es un factor que reduce el radio de infección cuando la entidad infectada porta mascarilla
-
-- INFECT_PROB: Probabilidad de contagio base de la enfermedad
-- IMMUNITY_FAIL: Probabilidad de que la inmunidad de una entidad falle
-
-### Probabilidades de recuperacion
-RECOVERY_AFTER_TIME: Probabilidad de superar la infección cuando ha acabado la duración base ésta.
-RECOVERY_BEFORE_TIME: Probabilidad de que la entidad supere la infección antes del periodo determinado.
-
-DETECTION_DELAY: Tiempo en el que una entidad es puesta en cuarentena luega de ser contagiada.
+- IMMUNITY_DURATION: Duración del periodo de inmunidad luego de que la entidad se haya recuperado.
+- IMMUNITY_PROB_AFTER_TIME: Valor entre 0 y 1, representa la probabilidad de extender el periodo de inmunidad adquirida.
+- INFECT_RADIUS: Valor entero, indica el radio por defecto en el cual una entidad puede infectar a otras.
+- MASK_RADIUS_INFECTION: Valor entre 0 y 1. Es un factor que reduce el radio de infección cuando la entidad infectada porta mascarilla.
+- INFECT_PROB: Probabilidad de contagio base de la enfermedad.
+- IMMUNITY_FAIL: Probabilidad de que la inmunidad de una entidad falle.
+- RECOVERY_AFTER_TIME: Probabilidad de superar la infección cuando ha acabado la duración base ésta.
+- RECOVERY_BEFORE_TIME: Probabilidad de que la entidad supere la infección antes del periodo determinado.
+- DETECTION_DELAY: Tiempo en el que una entidad es puesta en cuarentena luega de ser contagiada.
 
 
 
