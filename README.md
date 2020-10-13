@@ -90,8 +90,36 @@ Cuando una enfermedad es mortal, se define su tasa de mortalidad y un factor de 
 
 ## Algoritmo
 ---
-El algoritmo consiste en un ciclo perpetuo en la clase Grapher que mantiene la gráfica corriendo. Al iniciar agrega las entidades a la clase Grapher. Para esto, la clase Population completa su arreglo, diccionarios e indicadores con la información entregada. Luego, comienza con la constante actualización de las ubicaciones de cada entidad. 
-Al momento de actualizar la ubicación de cada entidad, se comprueba primero, si esta se encuentra viva y de ser así, se calcula el nuevo movimiento de esta entidad. Junto con esto, se comprueba si continúa enfermo, ha fallecido, se ha recuperado o si ha desarrollado inmunidad. Después, se actualizan los diccionarios de entidades. Finalmente, realiza la búsqueda en el QuadTree, se actualiza la gráfica y se repite el ciclo. 
+El algoritmo comienza instanciando la clase Grapher, la encargada de manejar la interfaz gráfica. Dentro del mismo existe un ciclo infinito que sólo finaliza cuando se cierra la interfaz gráfica aprentando la "x".
+La clase Grapher incluye toda la lógica del problema dentro de una instancia de Population. Los parámetros de ejecución son pasados desde consola, por grapher, hasta population.
+
+La clase Population completa su arreglo, diccionarios e indicadores con la información entregada. Luego, comienza con la constante actualización de las ubicaciones de cada entidad. Al momento de actualizar la ubicación de cada entidad, se comprueba primero, si esta se encuentra viva y de ser así, se calcula el nuevo movimiento de esta entidad. Junto con esto, se comprueba si continúa enfermo, ha fallecido, se ha recuperado o si ha desarrollado inmunidad. Después, se actualizan los diccionarios de entidades. Finalmente, realiza la búsqueda en el QuadTree, se actualiza la gráfica y se repite el ciclo. 
+
+## Pseudocódigo
+---
+	graper.entities = []
+	grapher.healty_entities = []
+	grapher.sick_entities = []
+	grapher.init(n_entities,s_entities,quarentine,masks)
+		while program.not_closed
+			Quadtree.reset()
+			for item in grapher.healty_entities
+				item -> Quadtree.insert()
+			for item in sick_entities
+				if quarentine_enabled and item.sick_time > detection_delay:
+					item.go_quarentine()
+					continue
+				for neighbor in Quadtree.find_neighbors(item)
+					item.try_infect(neighbor)
+					if neighbor.is_infected()
+						healty_entities.pop(neighbor)
+						sick_entities.insert(neighbor)
+			for item in entities
+				item.move_to_target()
+				if item.is_on_target()
+					item.set_new_target(random)
+---
+
 
 
 ### QuadTree 
